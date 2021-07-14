@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.AI;
+﻿using UnityEngine;
 using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(PlayerInput))]
@@ -23,6 +20,8 @@ public class PlayerMovementInputController : MonoBehaviour
 
     private void Awake()
     {
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
     }
 
     public void OnMove(InputAction.CallbackContext value)
@@ -39,7 +38,7 @@ public class PlayerMovementInputController : MonoBehaviour
     {
         aimValue = value.Get<float>();
     }
-    
+
     public void OnFire(InputValue value)
     {
         fireValue = value.Get<float>();
@@ -50,20 +49,21 @@ public class PlayerMovementInputController : MonoBehaviour
     private void Update()
     {
         #region Player Based Rotation
-        
+
         //Move the player based on the X input on the controller
         //transform.rotation *= Quaternion.AngleAxis(_look.x * rotationPower, Vector3.up);
 
-        #endregion
+        #endregion Player Based Rotation
 
         #region Follow Transform Rotation
 
         //Rotate the Follow Target transform based on the input
         followTransform.transform.rotation *= Quaternion.AngleAxis(_look.x * rotationPower, Vector3.up);
 
-        #endregion
+        #endregion Follow Transform Rotation
 
         #region Vertical Rotation
+
         followTransform.transform.rotation *= Quaternion.AngleAxis(_look.y * rotationPower, Vector3.right);
 
         var angles = followTransform.transform.localEulerAngles;
@@ -76,20 +76,19 @@ public class PlayerMovementInputController : MonoBehaviour
         {
             angles.x = 340;
         }
-        else if(angle < 180 && angle > 40)
+        else if (angle < 180 && angle > 40)
         {
             angles.x = 40;
         }
 
-
         followTransform.transform.localEulerAngles = angles;
-        #endregion
 
-        
+        #endregion Vertical Rotation
+
         nextRotation = Quaternion.Lerp(followTransform.transform.rotation, nextRotation, Time.deltaTime * rotationLerp);
 
-        if (_move.x == 0 && _move.y == 0) 
-        {   
+        if (_move.x == 0 && _move.y == 0)
+        {
             nextPosition = transform.position;
 
             if (aimValue == 1)
@@ -100,18 +99,15 @@ public class PlayerMovementInputController : MonoBehaviour
                 followTransform.transform.localEulerAngles = new Vector3(angles.x, 0, 0);
             }
 
-            return; 
+            return;
         }
         float moveSpeed = speed / 100f;
         Vector3 position = (_move.y * moveSpeed * transform.forward) + (_move.x * moveSpeed * transform.right);
-        nextPosition = transform.position + position;        
-        
+        nextPosition = transform.position + position;
 
         //Set the player rotation based on the look transform
         transform.rotation = Quaternion.Euler(0, followTransform.transform.rotation.eulerAngles.y, 0);
         //reset the y rotation of the look transform
         followTransform.transform.localEulerAngles = new Vector3(angles.x, 0, 0);
     }
-
-
 }
