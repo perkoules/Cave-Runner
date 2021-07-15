@@ -8,6 +8,8 @@ public class GameCanvas : MonoBehaviour
 {
     public GameObject visualPatternObject;
     public GameObject interactText;
+    public TextMeshProUGUI objectiveText;
+    public TextMeshProUGUI countKeys;
 
     public void EnableCubePuzzle()
     {
@@ -17,5 +19,11 @@ public class GameCanvas : MonoBehaviour
     public void EnableInteartableText(bool value)
     {
         interactText.SetActive(value);
+    }
+    int counter = 0;
+    public void SetKeyValue()
+    {
+        counter++;
+        countKeys.text = counter.ToString(); 
     }
 }

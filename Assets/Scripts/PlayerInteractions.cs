@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerInteractions : MonoBehaviour
 {
@@ -8,11 +9,6 @@ public class PlayerInteractions : MonoBehaviour
     public List<Transform> checkpoints;
     public Material grey;
     private bool canInteract;
-
-    private void Awake()
-    {
-        
-    }
 
 
     private void OnTriggerEnter(Collider other)
@@ -54,6 +50,7 @@ public class PlayerInteractions : MonoBehaviour
             canInteract = true;
         }
     }
+
     private void OnTriggerExit(Collider other)
     {
         if (other.CompareTag("Interactable"))
@@ -84,8 +81,23 @@ public class PlayerInteractions : MonoBehaviour
     {
         if (canInteract)
         {
-            Debug.Log("Bow obtained");
-            //Obtain the bow
+            
+            Collider[] hitColliders = Physics.OverlapSphere(transform.position + Vector3.up, 2);
+            foreach (var hitCollider in hitColliders)
+            {
+                if (hitCollider.CompareTag("Key"))
+                {
+                    Destroy(hitCollider.transform.gameObject);
+                    myCanvas.SetKeyValue();
+                }
+                if (hitCollider.CompareTag("KeyB"))
+                {
+                    Destroy(hitCollider.transform.gameObject);
+                    myCanvas.SetKeyValue();
+                    RoomB.Instance.KeyObtained();
+                }
+            }
         }
     }
+
 }
