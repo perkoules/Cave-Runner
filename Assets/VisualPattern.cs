@@ -1,10 +1,11 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class VisualPattern : MonoBehaviour
 {
     public MeshRenderer[] cubes;
     public Material white;
-    public GameObject rockToDestroy;
+    public List<GameObject> objectsToDestroy;
 
     public void ChangeMaterial()
     {
@@ -22,7 +23,10 @@ public class VisualPattern : MonoBehaviour
             {
                 Destroy(item.gameObject);
             }
-            Destroy(rockToDestroy);
+            foreach (var item in objectsToDestroy)
+            {
+                Destroy(item);
+            }
             return true;
         }
         else
