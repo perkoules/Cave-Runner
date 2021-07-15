@@ -1,7 +1,9 @@
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class PlayerInteractions : MonoBehaviour
 {
@@ -9,7 +11,16 @@ public class PlayerInteractions : MonoBehaviour
     public List<Transform> checkpoints;
     public Material grey;
     private bool canInteract;
+    private bool canDetonate;
+    public GameObject killingSphere;
+    private bool canShowMap;
 
+    public static PlayerInteractions Instance { get; private set; }
+
+    private void Awake()
+    {
+        Instance = this;
+    }
 
     private void OnTriggerEnter(Collider other)
     {
@@ -17,6 +28,10 @@ public class PlayerInteractions : MonoBehaviour
         switch (otherTag)
         {
             case "Damage":
+                GoToCheckpoint();
+                break;
+
+            case "DeathPit":
                 GoToCheckpoint();
                 break;
 
@@ -37,9 +52,18 @@ public class PlayerInteractions : MonoBehaviour
                 AddCheckpoint(other.transform);
                 break;
 
+            case "End":
+                LoadEndScreen();
+
+                break;
             default:
                 break;
         }
+    }
+
+    private void LoadEndScreen()
+    {
+        SceneManager.LoadScene("End");
     }
 
     private void OnTriggerStay(Collider other)
@@ -49,6 +73,14 @@ public class PlayerInteractions : MonoBehaviour
             myCanvas.EnableInteartableText(true);
             canInteract = true;
         }
+        if (other.CompareTag("Rumble"))
+        {
+            canDetonate = true;
+            if (killingSphere != null)
+            {
+                killingSphere.SetActive(true);
+            }
+        }
     }
 
     private void OnTriggerExit(Collider other)
@@ -56,6 +88,14 @@ public class PlayerInteractions : MonoBehaviour
         if (other.CompareTag("Interactable"))
         {
             myCanvas.EnableInteartableText(false);
+        }
+        if (other.CompareTag("Rumble"))
+        {
+            canDetonate = false;
+            if (killingSphere != null)
+            {
+                killingSphere.SetActive(false);
+            }
         }
     }
 
@@ -81,7 +121,6 @@ public class PlayerInteractions : MonoBehaviour
     {
         if (canInteract)
         {
-            
             Collider[] hitColliders = Physics.OverlapSphere(transform.position + Vector3.up, 2);
             foreach (var hitCollider in hitColliders)
             {
@@ -96,8 +135,60 @@ public class PlayerInteractions : MonoBehaviour
                     myCanvas.SetKeyValue();
                     RoomB.Instance.KeyObtained();
                 }
+                if (hitCollider.CompareTag("KeyHill"))
+                {
+                    Destroy(hitCollider.transform.gameObject);
+                    myCanvas.SetKeyValue();
+                    HillRoom.Instance.KeyObtained();
+                }
+                if (hitCollider.CompareTag("KeyMap"))
+                {
+                    Destroy(hitCollider.transform.gameObject);
+                    myCanvas.SetKeyValue();
+                    myCanvas.EnableMap();
+                }
             }
         }
     }
 
+    public void OnAttack()
+    {
+        if (canDetonate)
+        {
+            Collider[] hitColliders = Physics.OverlapSphere(transform.position + Vector3.up, 15);
+            foreach (var hitCollider in hitColliders)
+            {
+                if (hitCollider.CompareTag("Enemy"))
+                {
+                    hitCollider.transform.gameObject.GetComponent<Enemy>().EnemeGotHit();
+                }
+            }
+        }
+
+        if (canShowMap)
+        {
+            StartCoroutine(ShowMapForSeconds());
+        }
+    }
+
+    private IEnumerator ShowMapForSeconds()
+    {
+        Maze.Instance.EnableMap(true);
+        yield return new WaitForSeconds(1f);
+        Maze.Instance.EnableMap(false);
+        yield return new WaitForSeconds(1f);
+        Maze.Instance.BackToPlayerView();
+        GoToCheckpoint();
+    }
+    public bool CanShowMap
+    {
+        get
+        {
+            return canShowMap;
+        }
+        set
+        {
+            canShowMap = value;
+        }
+    }
 }
