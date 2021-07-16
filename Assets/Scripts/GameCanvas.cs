@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -11,7 +10,7 @@ public class GameCanvas : MonoBehaviour
 
     public GameObject visualPatternObject;
     public GameObject interactText, narrationBox;
-    public TextMeshProUGUI objectiveText;
+    public TextMeshProUGUI objectiveText, timer;
 
     public List<Image> keys;
 
@@ -20,20 +19,23 @@ public class GameCanvas : MonoBehaviour
         Instance = this;
     }
 
-    public void EnableCubePuzzle()
+    public void EnableCubePuzzle(bool value)
     {
-        visualPatternObject.SetActive(true);
+        visualPatternObject.SetActive(value);
     }
 
     public void EnableInteartableText(bool value)
     {
         interactText.SetActive(value);
     }
-    int counter = 0;
+
+    private int counter = 0;
+    private bool countTime;
+
     public void SetKeyValue()
     {
         keys[counter].color = new Color(1, 1, 1, 1);
-        counter++;        
+        counter++;
     }
 
     public void EnableMap()
@@ -41,11 +43,36 @@ public class GameCanvas : MonoBehaviour
         objectiveText.text = "Right click for map, but it will take you back to checkpoint.";
     }
 
-
     public void ShowNarrationText(bool value, string textToDisplay)
     {
         narrationBox.SetActive(value);
         var nb = narrationBox.GetComponent<AdjustNarrationText>();
         nb.SetUpText(textToDisplay);
+    }
+
+    public void SetObjectiveText(string objText)
+    {
+        objectiveText.text = objText;
+    }
+
+    private float currentTime;
+
+    public void EnableTimer()
+    {
+        if (!countTime)
+        {
+            currentTime = 0;
+        }
+        countTime = true;
+    }
+
+    private void Update()
+    {
+        if (countTime)
+        {
+            currentTime += Time.deltaTime;
+            TimeSpan time = TimeSpan.FromSeconds(currentTime);
+            timer.text = time.ToString(@"mm\:ss\:fff");
+        }
     }
 }

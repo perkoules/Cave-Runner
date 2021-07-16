@@ -25,6 +25,7 @@ public class OrcRoom : MonoBehaviour
                 Destroy(item);
             }
             Destroy(PlayerInteractions.Instance.killingSphere);
+            GameCanvas.Instance.SetObjectiveText("");
         }
     }
 

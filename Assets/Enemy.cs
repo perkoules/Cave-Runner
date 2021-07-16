@@ -31,11 +31,12 @@ public class Enemy : MonoBehaviour
 
 
                 agent.destination = player.transform.position;
-                if (dist < 3f)
+                if (dist < 2f)
                 {
                     anim.SetTrigger("AttackPlayer");
                     PlayerInteractions.Instance.GoToCheckpoint();
                     OrcRoom.Instance.GoToInitialPosition();
+                    RoomB.Instance.GoToInitialPosition();
                 }
             } 
         }

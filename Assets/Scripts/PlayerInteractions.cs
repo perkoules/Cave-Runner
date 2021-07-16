@@ -36,7 +36,7 @@ public class PlayerInteractions : MonoBehaviour
                 break;
 
             case "Pattern":
-                myCanvas.EnableCubePuzzle();
+                myCanvas.EnableCubePuzzle(true);
                 break;
 
             case "Columns":
@@ -46,10 +46,18 @@ public class PlayerInteractions : MonoBehaviour
                 {
                     GoToCheckpoint();
                 }
+                else
+                {
+                    myCanvas.SetObjectiveText("");
+                }
                 break;
 
             case "Checkpoint":
-                AddCheckpoint(other.transform);
+                AddCheckpoint(other);
+                break;
+
+            case "Narration":
+                DisplayNarration(other);
                 break;
 
             case "End":
@@ -61,9 +69,32 @@ public class PlayerInteractions : MonoBehaviour
         }
     }
 
+    private void AddCheckpoint(Collider other)
+    {
+        myCanvas.SetObjectiveText(other.GetComponent<SetObjective>().ObjectText);
+        if (!checkpoints.Contains(other.transform))
+        {
+            checkpoints.Add(other.transform);
+        }
+        if(checkpoints.Count == 1)
+        {
+            myCanvas.EnableTimer();
+        }
+    }
+
+    private void DisplayNarration(Collider other)
+    {
+        var n = other.GetComponent<NarrationText>();
+        myCanvas.ShowNarrationText(true, n.NarText);
+    }
+
     private void LoadEndScreen()
     {
-        SceneManager.LoadScene("End");
+        Color col = new Color(1, 1, 1, 1);
+        if (myCanvas.keys.All(img => img.color == col))
+        {
+            SceneManager.LoadScene("End"); 
+        }
     }
 
     private void OnTriggerStay(Collider other)
@@ -97,13 +128,9 @@ public class PlayerInteractions : MonoBehaviour
                 killingSphere.SetActive(false);
             }
         }
-    }
-
-    private void AddCheckpoint(Transform tr)
-    {
-        if (!checkpoints.Contains(tr))
+        if (other.CompareTag("Narration"))
         {
-            checkpoints.Add(tr);
+            myCanvas.ShowNarrationText(false, "");
         }
     }
 

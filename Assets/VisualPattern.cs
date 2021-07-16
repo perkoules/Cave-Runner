@@ -27,6 +27,7 @@ public class VisualPattern : MonoBehaviour
             {
                 Destroy(item);
             }
+            GameCanvas.Instance.EnableCubePuzzle(false);
             return true;
         }
         else
