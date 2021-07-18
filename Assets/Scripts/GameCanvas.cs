@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class GameCanvas : MonoBehaviour
@@ -10,7 +11,8 @@ public class GameCanvas : MonoBehaviour
 
     public GameObject visualPatternObject;
     public GameObject interactText, narrationBox;
-    public TextMeshProUGUI objectiveText, timer;
+    public TextMeshProUGUI objectiveText, timer, endDisplayTimer;
+    public GameObject gamePanel, endPanel;
 
     public List<Image> keys;
 
@@ -75,4 +77,18 @@ public class GameCanvas : MonoBehaviour
             timer.text = time.ToString(@"mm\:ss\:fff");
         }
     }
+
+    public void StopTimer()
+    {
+        countTime = false;
+        EndText();
+    }
+
+    public void EndText()
+    {
+        gamePanel.SetActive(false);
+        endPanel.SetActive(true);
+        endDisplayTimer.text = timer.text;
+    }
+
 }

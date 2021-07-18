@@ -62,11 +62,19 @@ public class PlayerInteractions : MonoBehaviour
 
             case "End":
                 LoadEndScreen();
+                break;
+            case "Time":
+                EnableTime();
 
                 break;
             default:
                 break;
         }
+    }
+
+    private void EnableTime()
+    {
+        myCanvas.EnableTimer();
     }
 
     private void AddCheckpoint(Collider other)
@@ -75,10 +83,6 @@ public class PlayerInteractions : MonoBehaviour
         if (!checkpoints.Contains(other.transform))
         {
             checkpoints.Add(other.transform);
-        }
-        if(checkpoints.Count == 1)
-        {
-            myCanvas.EnableTimer();
         }
     }
 
@@ -93,7 +97,7 @@ public class PlayerInteractions : MonoBehaviour
         Color col = new Color(1, 1, 1, 1);
         if (myCanvas.keys.All(img => img.color == col))
         {
-            SceneManager.LoadScene("End"); 
+            myCanvas.StopTimer();
         }
     }
 
@@ -136,7 +140,8 @@ public class PlayerInteractions : MonoBehaviour
 
     public void GoToCheckpoint()
     {
-        var posToGo = checkpoints.Last().transform;
+        //var posToGo = checkpoints.Last().transform;
+        var posToGo = checkpoints[0].transform;
         CharacterController cc = GetComponent<CharacterController>();
 
         cc.enabled = false;
@@ -218,4 +223,11 @@ public class PlayerInteractions : MonoBehaviour
             canShowMap = value;
         }
     }
+
+
+    public void OnReplay()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
 }
