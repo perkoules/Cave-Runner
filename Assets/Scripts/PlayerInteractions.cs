@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -63,10 +62,12 @@ public class PlayerInteractions : MonoBehaviour
             case "End":
                 LoadEndScreen();
                 break;
+
             case "Time":
                 EnableTime();
 
                 break;
+
             default:
                 break;
         }
@@ -105,8 +106,11 @@ public class PlayerInteractions : MonoBehaviour
     {
         if (other.CompareTag("Interactable"))
         {
-            myCanvas.EnableInteartableText(true);
-            canInteract = true;
+            if (other.transform.childCount == 1)
+            {
+                myCanvas.EnableInteartableText(true);
+                canInteract = true;
+            }
         }
         if (other.CompareTag("Rumble"))
         {
@@ -140,8 +144,8 @@ public class PlayerInteractions : MonoBehaviour
 
     public void GoToCheckpoint()
     {
-        //var posToGo = checkpoints.Last().transform;
-        var posToGo = checkpoints[0].transform;
+        var posToGo = checkpoints.Last().transform;
+        //var posToGo = checkpoints[0].transform;
         CharacterController cc = GetComponent<CharacterController>();
 
         cc.enabled = false;
@@ -212,6 +216,7 @@ public class PlayerInteractions : MonoBehaviour
         Maze.Instance.BackToPlayerView();
         GoToCheckpoint();
     }
+
     public bool CanShowMap
     {
         get
@@ -224,10 +229,8 @@ public class PlayerInteractions : MonoBehaviour
         }
     }
 
-
     public void OnReplay()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
-
 }
